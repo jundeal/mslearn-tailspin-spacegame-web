@@ -1,8 +1,3 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger:
 - '*'
 
@@ -13,21 +8,21 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  wwwRootDir: Tailspin.SpaceGame.Web/wwwroot
-  dotNotSdkVersion: 3.1.300
+  wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot'
+  dotnetSdkVersion: '3.1.300'
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET Core SDK $(dotNotSdkVersion)'
+  displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
   inputs:
-    version: $(dotNotSdkVersion)
+    version: '$(dotnetSdkVersion)'
 
 - task: Npm@1
   displayName: 'Run npm install'
   inputs:
     verbose: false
 
-- script: './node_modules/.bin/node-sass $(wwwRootDir) --output $(wwwRootDir)'
+- script: './node_modules/.bin/node-sass $(wwwrootDir) --output $(wwwrootDir)'
   displayName: 'Compile Sass assets'
 
 - task: gulp@1
@@ -35,7 +30,7 @@ steps:
 
 - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
   displayName: 'Write build info'
-  workingDirectory: $(wwwRootDir)
+  workingDirectory: $(wwwrootDir)
 
 - task: DotNetCoreCLI@2
   displayName: 'Restore project dependencies'
@@ -44,8 +39,8 @@ steps:
     projects: '**/*.csproj'
 
 - template: templates/build.yml
-    parameters:
-      buildConfiguration: 'Debug' 
+  parameters:
+    buildConfiguration: 'Debug'
 
 - template: templates/build.yml
   parameters:
